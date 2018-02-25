@@ -60,6 +60,22 @@ public extension Array where Element == Int8 {
     }
 }
 
+public extension Decodable {
+    
+    public static func readFromDisk(path: String) -> Self? {
+        do {
+            let jsonDecoder = JSONDecoder()
+            let configData : Data = try Data(contentsOf: URL(fileURLWithPath: path))
+            let serverConfig = try jsonDecoder.decode(Self.self, from: configData)
+            return serverConfig
+        } catch {
+            print("Couldn't load json from disk: \(error)")
+            return nil
+        }
+        
+    }
+}
+
 public extension Array where Element == UInt8 {
 
     public init(count: Int) {
