@@ -154,6 +154,15 @@ public extension Array where Element == String {
 
 public extension String {
     
+    /// Workaround for Linux as 'contentsOfFile' is not yet implemented
+    public init(fromFile : String) throws {
+        let data = try Data(contentsOf: URL(fileURLWithPath: fromFile))
+        guard let string = String(data: data, encoding: .utf8) else {
+            throw "Could not convert data to string".error()
+        }
+        self = string
+    }
+    
     @_transparent
     public var url : URL {
         guard let url = URL(string: self) else {
