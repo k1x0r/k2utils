@@ -72,8 +72,8 @@ public extension Decodable {
             print("Couldn't load json from disk: \(error)")
             return nil
         }
-        
     }
+        
 }
 
 public extension Array where Element == UInt8 {

@@ -126,6 +126,32 @@ public extension Array where Element == UInt8 {
     
 }
 
+public extension Array where Element == String {
+    
+    
+    func cmdArgumenmts() -> [String : String] {
+        var dict = [String : String]()
+        var key : String = "1st"
+        var value : String = ""
+        for arg in self {
+            if arg.starts(with: "-") {
+                dict[key] = value
+                key = arg
+                value = ""
+            } else {
+                if !value.isEmpty {
+                    value += " "
+                }
+                value += arg
+            }
+        }
+        dict[key] = value
+
+        return dict
+    }
+    
+}
+
 public extension String {
     
     @_transparent
@@ -243,6 +269,7 @@ public extension String {
         }
         return array;
     }
+    
     
     @_transparent
     var percentEncoding : String {
