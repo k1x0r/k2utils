@@ -9,6 +9,29 @@ import Dispatch
 
 public let 📱64bit = MemoryLayout<Int>.size == MemoryLayout<Int64>.size
 
+public var kCurrentExeDirectory : String = {
+    var buffer = [Int8](repeating: 0, count: 1024)
+    #if os(Linux)
+        readlink("/proc/self/exe", &buffer, buffer.count)
+    #elseif os(OSX)
+        var size = UInt32(buffer.count)
+        _NSGetExecutablePath(&buffer, &size)
+    #else
+        readlink("/proc/curproc/file", &buffer, buffer.count)
+    #endif
+    return buffer.fromCString.substring(toLast: "/") ?? ""
+    
+    // toString decodes entire array to string. Not suitable for null-terminated string
+}()
+
+
+public var kCurrentWorkingDirectory : String = {
+    var buffer = [Int8](repeating: 0, count: 1024)
+    getcwd(&buffer, buffer.count)
+    
+    return buffer.fromCString
+}()
+
 infix operator =+;
 
 /// FIXME: Maybe remove?
