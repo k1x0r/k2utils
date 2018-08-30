@@ -24,6 +24,16 @@ public extension Array {
     var lastIndex : Int {
         return endIndex - 1
     }
+    
+    var rawData : Data {
+        return withUnsafeBytes { bufferPtr -> Data in
+            guard let baseAddress = bufferPtr.baseAddress else {
+                return Data()
+            }
+            return Data(bytes: baseAddress, count: bufferPtr.count)
+        }
+    }
+    
 }
 
 extension Array {
