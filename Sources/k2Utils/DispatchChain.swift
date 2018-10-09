@@ -9,15 +9,52 @@ import Dispatch
 
 public class ChainContext<C> : This {
     public typealias ErrorHandler = (C, Error) -> ()
+    public typealias DeferHandler = (C) -> ()
 
     internal var chains : [AnyObject] = []
     
+    public var deferHandler : DeferHandler?
     public var errorHandler : ErrorHandler?
+    public var endQueue : DispatchQueue?
+    
     internal var runCommand : (() -> Void)?    
     public var context : C
     
     public init(context : C) {
         self.context = context
+    }
+    
+    
+    func handleError(error : Error) {
+        guard let errorHandler = errorHandler else {
+            return
+        }
+        if let errorQ = endQueue {
+            print("ChainContext -> Handle Error Queue Start")
+
+            errorQ.async { [unowned self] in
+                errorHandler(self.context, error)
+                print("ChainContext -> Handle Error Queue Finish")
+            }
+        } else {
+            errorHandler(context, error)
+        }
+    }
+    
+    func handleDefer() {
+        guard let deferHandler = deferHandler else {
+            return
+        }
+        if let errorQ = endQueue {
+            print("ChainContext -> Handle Defer Queue Start")
+
+            errorQ.async { [unowned self] in
+                deferHandler(self.context)
+                print("ChainContext -> Handle Defer Queue Finish")
+            }
+        } else {
+            deferHandler(context)
+        }
     }
     
     deinit {
@@ -73,12 +110,13 @@ public class Chain<T, C> : This {
     }
     
     @discardableResult
-    public func endWith(command: @escaping NextCommand, errorHandler : ChainContext<C>.ErrorHandler? = nil) -> ChainContext<C> {
+    public func endWith(command: @escaping NextCommand, endQueue : DispatchQueue? = nil, errorHandler : ChainContext<C>.ErrorHandler? = nil, deferHandler: ChainContext<C>.DeferHandler? = nil) -> ChainContext<C> {
         isLast = true
         nextCommand = { [weak self] data in
             command(data)
             self?.context.runCommand = nil
         }
+        context.endQueue = endQueue
         context.errorHandler = errorHandler
         context.runCommand?()
         return context
@@ -93,12 +131,13 @@ public class Chain<T, C> : This {
 extension Chain {
     
     public static func startWith<U, C>(queue : DispatchQueue, context: C, _ closure : @escaping (C) throws -> (U) ) -> Chain<U, C> {
-        return startWith(context: context, command: { cmdContext, next in
+        return startWith(context: context, command: { chainContext, next in
             queue.async {
                 do {
                     next(try closure(context))
                 } catch {
-                    cmdContext.errorHandler?(context, error)
+                    chainContext.handleError(error: error)
+                    chainContext.handleDefer()
                 }
             }
         })
@@ -106,15 +145,16 @@ extension Chain {
     
     public func thenNext<U>(queue : DispatchQueue, _ closure : @escaping (C, T, @escaping (U) -> ()) throws -> ()) -> Chain<U, C> {
         return then(command: { [weak self] data, next in
-            guard let context = self?.context else {
+            guard let chainContext = self?.context else {
                 print("No Self!")
                 return
             }
-            queue.async { // [weak self] in
+            queue.async {
                 do {
-                    try closure(context.context, data, next)
+                    try closure(chainContext.context, data, next)
                 } catch {
-                    context.errorHandler?(context.context, error)
+                    chainContext.handleError(error: error)
+                    chainContext.handleDefer()
                 }
             }
         })
@@ -122,35 +162,37 @@ extension Chain {
     
     public func then<U>(queue : DispatchQueue, _ closure : @escaping (C, T) throws -> (U)) -> Chain<U, C> {
         return then(command: { [weak self] data, next in
-            guard let context = self?.context else {
+            guard let chainContext = self?.context else {
                 print("No Self!")
                 return
             }
-            queue.async { // [weak self] in
+            queue.async {
                 do {
-                    next(try closure(context.context, data))
+                    next(try closure(chainContext.context, data))
                 } catch {
-                    context.errorHandler?(context.context, error)
+                    chainContext.handleError(error: error)
+                    chainContext.handleDefer()
                 }
             }
         })
     }
     
     @discardableResult
-    public func endWith(queue : DispatchQueue, _ closure : @escaping (C, T) throws -> (), errorHandler : ChainContext<C>.ErrorHandler? = nil) -> ChainContext<C> {
+    public func endWith(queue : DispatchQueue, _ closure : @escaping (C, T) throws -> (), endQueue : DispatchQueue? = nil, errorHandler : ChainContext<C>.ErrorHandler? = nil, deferHandler: ChainContext<C>.DeferHandler? = nil) -> ChainContext<C> {
         return endWith(command: { [weak self] data in
-            guard let context = self?.context else {
+            guard let chainContext = self?.context else {
                 print("No Self!")
                 return
             }
-            queue.async { //  [weak self] in
+            queue.async {
                 do {
-                    try closure(context.context, data)
+                    try closure(chainContext.context, data)
                 } catch {
-                    context.errorHandler?(context.context, error)
+                    chainContext.handleError(error: error)
                 }
+                chainContext.handleDefer()
             }
-        }, errorHandler : errorHandler)
+        }, endQueue: endQueue, errorHandler : errorHandler, deferHandler: deferHandler)
     }
 }
 

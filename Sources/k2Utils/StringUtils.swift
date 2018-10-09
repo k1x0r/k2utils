@@ -1,5 +1,15 @@
 import Foundation
 
+#if os(iOS)
+public let kDocumentsPath : String = {
+   let searchArray = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+   guard searchArray.count > 0 else {
+      fatalError("Documents Path is not found")
+   }
+   return searchArray[0].appendIfNotEnds("/")
+}()
+#endif
+
 extension CharacterSet {
     public static let charsetEmailAddress = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_`{|}~.")
     public static let charsetDomain = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.")
