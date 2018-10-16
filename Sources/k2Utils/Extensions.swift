@@ -180,6 +180,12 @@ extension NSObject : This {}
 
 public extension This {
     public typealias this = Self
+    
+    func additionalInit(_ closure : (Self)->()) -> Self {
+        closure(self)
+        return self
+    }
+
 }
 
 public extension UUID {
