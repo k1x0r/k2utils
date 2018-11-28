@@ -180,7 +180,8 @@ extension NSObject : This {}
 
 public extension This {
     public typealias this = Self
-    
+    public typealias Me = Self
+
     func additionalInit(_ closure : (Self)->()) -> Self {
         closure(self)
         return self
@@ -261,11 +262,11 @@ public extension DispatchQueue {
 
 extension String {
     public func error(functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) -> StringError {
-       return StringError(description: "\(Date()): <\(fileName)> \(functionName) [#\(lineNumber)]| \(self)")
+        return StringError(description: self, debugInfo: "\(Date()): <\(fileName)> \(functionName) [#\(lineNumber)]|")
     }
     
     public var rawError : StringError {
-        return StringError(description : self)
+        return StringError(description : self, debugInfo: "")
     }
 }
 
@@ -278,6 +279,8 @@ public struct StringError : LocalizedError {
     }
     
     public var description : String
+    public var debugInfo : String
+    
 }
 
 public extension Dictionary where Key : ExpressibleByStringLiteral {
@@ -331,4 +334,9 @@ public extension Data {
         }
     }
 
+}
+
+public enum CompletionResult<T> {
+    case success(T)
+    case error(Error)
 }
