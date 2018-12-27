@@ -6,6 +6,18 @@
 
 import Foundation
 
+public extension Sequence {
+    
+    func firstMap<T>(where whereClosure: (Element)->(T?)) -> T? {
+        for element in self {
+            if let result = whereClosure(element) {
+                return result
+            }
+        }
+        return nil
+    }
+    
+}
 
 public extension Array where Element : AnyObject {
     
