@@ -175,6 +175,8 @@ public extension Int {
 
 public protocol This {
 }
+/// Think about more convenient and understandable name for this protocol.
+public typealias MeSelf = This
 
 extension NSObject : This {}
 

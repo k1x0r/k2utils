@@ -8,6 +8,9 @@ let package = Package(
         .library(
             name: "k2Utils",
             targets: ["k2Utils"]),
+        .library(
+            name: "KeychainWrapper",
+            targets: ["KeychainWrapper"])
     ],
     dependencies: [
         // .package(url: /* package url */, from: "1.0.0"),
@@ -15,7 +18,12 @@ let package = Package(
     targets: [
         .target(
             name: "k2Utils",
-            dependencies: []),
+            dependencies: []
+        ),
+        .target(
+            name: "KeychainWrapper",
+            dependencies: ["k2Utils"]
+        ),
         .testTarget(
             name: "DispatchChainTests",
             dependencies: ["k2Utils"]),

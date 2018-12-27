@@ -44,8 +44,8 @@ extension UnsafeMutableRawPointer : MutablePointer {
 
     @_transparent
     @inline(__always)
-    public static func allocate(capacity count: Int) -> this {
-        return this.allocate(bytes: count, alignedTo: 1)
+    public static func allocate(capacity count: Int) -> Me {
+        return Me.allocate(bytes: count, alignedTo: 1)
     }
 }
 

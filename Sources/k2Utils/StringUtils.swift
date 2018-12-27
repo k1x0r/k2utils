@@ -211,12 +211,12 @@ public extension String {
     /// C String without \0 in the end
     @_transparent
     var cArray : [CChar] {
-        return utf8.map { unsafeBitCast($0, to: CChar.self) }
+        return utf8.map { CChar(bitPattern: $0) }
     }
 
     @_transparent
     var uint8Array : [UInt8] {
-        return utf8.map { unsafeBitCast($0, to: UInt8.self) }
+        return utf8.map { $0 }
     }
     
     @_transparent

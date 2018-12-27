@@ -41,7 +41,7 @@ public struct KeyValueArray<K, V> : This, ExpressibleByDictionaryLiteral where K
     
     public var array : [Pair<Key, Value>]
     
-    public init(dictionaryLiteral elements: (this.Key, this.Value)...) {
+    public init(dictionaryLiteral elements: (Me.Key, Me.Value)...) {
         array = elements.map({ $0.0 > $0.1 })
     }
 }

@@ -58,7 +58,7 @@ public class ChainContext<C> : This {
     }
     
     deinit {
-        print("\(this.self) deinit")
+        print("\(Me.self) deinit")
     }
 }
 
@@ -123,7 +123,7 @@ public class Chain<T, C> : This {
     }
     
     deinit {
-        print("\(this.self) deinit")
+        print("\(Me.self) deinit")
     }
 
 }
