@@ -1,12 +1,13 @@
 import Foundation
 
 #if os(iOS)
-public let kDocumentsPath : String = {
-   let searchArray = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-   guard searchArray.count > 0 else {
-      fatalError("Documents Path is not found")
-   }
-   return searchArray[0].appendIfNotEnds("/")
+public let kDocumentsUrl : URL = {
+   return try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create:true)
+}()
+
+public let kAppSupportUrl : URL = {
+//    let appSupportUrl = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create:false)
+    return try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create:true)
 }()
 #endif
 

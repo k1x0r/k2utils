@@ -24,6 +24,14 @@ public var kCurrentExeDirectory : String = {
     // toString decodes entire array to string. Not suitable for null-terminated string
 }()
 
+public func tryLog<T>(_ closure : () throws -> T) -> T? {
+    do {
+        return try closure()
+    } catch {
+        NSLog("🚨🚨 tryLog 🚨🚨 \(error)")
+        return nil
+    }
+}
 
 public var kCurrentWorkingDirectory : String = {
     var buffer = [Int8](repeating: 0, count: 1024)
@@ -184,8 +192,8 @@ public extension This {
     public typealias this = Self
     public typealias Me = Self
 
-    func additionalInit(_ closure : (Self)->()) -> Self {
-        closure(self)
+    func additionalInit(_ closure : (Self) throws -> ()) rethrows -> Self {
+        try closure(self)
         return self
     }
 
