@@ -7,17 +7,27 @@
 import Foundation
 import Dispatch
 
+public protocol ChainIf {
+    var value : Bool { get }
+}
+
+extension Bool : ChainIf {
+    public var value: Bool {
+        return self
+    }
+}
+
 public class ChainContext<C> : This {
     public typealias ErrorHandler = (C, Error) -> ()
     public typealias DeferHandler = (C) -> ()
-
+    
     internal var chains : [AnyObject] = []
     
     public var deferHandler : DeferHandler?
     public var errorHandler : ErrorHandler?
     public var endQueue : DispatchQueue?
     
-    internal var runCommand : (() -> Void)?    
+    internal var runCommand : (() -> Void)?
     public var context : C
     
     public init(context : C) {
@@ -31,7 +41,7 @@ public class ChainContext<C> : This {
         }
         if let errorQ = endQueue {
             print("ChainContext -> Handle Error Queue Start")
-
+            
             errorQ.async { [unowned self] in
                 errorHandler(self.context, error)
                 print("ChainContext -> Handle Error Queue Finish")
@@ -47,7 +57,7 @@ public class ChainContext<C> : This {
         }
         if let errorQ = endQueue {
             print("ChainContext -> Handle Defer Queue Start")
-
+            
             errorQ.async { [unowned self] in
                 deferHandler(self.context)
                 print("ChainContext -> Handle Defer Queue Finish")
@@ -65,7 +75,7 @@ public class ChainContext<C> : This {
 public class Chain<T, C> : This {
     
     public typealias NextCommand = (T) -> ()
-    public typealias Command<U> = (_ data : T, _ next : @escaping (U)->()) -> ()
+    public typealias Command<U> = (_ context : ChainContext<C>, _ data : T, _ next : @escaping (U)->()) -> ()
     
     private var nextCommand: NextCommand?
     
@@ -96,7 +106,7 @@ public class Chain<T, C> : This {
         let chain = Chain<U, C>(context : context)
         context.chains.append(chain)
         nextCommand = { data in
-            command(data, { [weak chain] t in
+            command(self.context, data, { [weak chain] t in
                 guard let chain = chain else {
                     print("Chain is released")
                     return
@@ -106,6 +116,22 @@ public class Chain<T, C> : This {
                 chain.context.chains.remove(byReference: chain)
             })
         }
+        return chain
+    }
+    
+    public func union(_ other : Chain<T, C>) -> Chain<T, C> {
+        let chain = Chain<T, C>(context : context)
+        context.chains.append(chain)
+        nextCommand = { [weak chain] data in
+            guard let chain = chain else {
+                print("Chain is released")
+                return
+            }
+            chain.nextCommand?(data)
+            chain.context.runCommand = nil
+            chain.context.chains.remove(byReference: chain)
+        }
+        other.nextCommand = nextCommand
         return chain
     }
     
@@ -125,7 +151,41 @@ public class Chain<T, C> : This {
     deinit {
         print("\(Me.self) deinit")
     }
+}
 
+public extension Chain where T : ChainIf {
+    
+    
+    /// FIXME: Memory leak! For testing just leave as is.
+    public func fork() -> (whenTrue : Chain<T, C>, whenFalse : Chain<T, C>) {
+        let chainTrue = Chain<T, C>(context : context)
+        let chainFalse = Chain<T, C>(context : context)
+        
+        context.chains.append(chainTrue)
+        context.chains.append(chainFalse)
+        
+        nextCommand = { [weak chainTrue, weak chainFalse] data in
+            if data.value {
+                guard let chain = chainTrue else {
+                    print("Chain is released")
+                    return
+                }
+                chain.nextCommand?(data)
+                chain.context.runCommand = nil
+                chain.context.chains.remove(byReference: chain)
+            } else {
+                guard let chain = chainFalse else {
+                    print("Chain is released")
+                    return
+                }
+                chain.nextCommand?(data)
+                chain.context.runCommand = nil
+                chain.context.chains.remove(byReference: chain)
+            }
+        }
+        return (chainTrue, chainFalse)
+    }
+    
 }
 
 extension Chain {
@@ -144,7 +204,7 @@ extension Chain {
     }
     
     public func thenNext<U>(queue : DispatchQueue, _ closure : @escaping (C, T, @escaping (U) -> ()) throws -> ()) -> Chain<U, C> {
-        return then(command: { [weak self] data, next in
+        return then(command: { [weak self] context, data, next in
             guard let chainContext = self?.context else {
                 print("No Self!")
                 return
@@ -161,7 +221,7 @@ extension Chain {
     }
     
     public func then<U>(queue : DispatchQueue, _ closure : @escaping (C, T) throws -> (U)) -> Chain<U, C> {
-        return then(command: { [weak self] data, next in
+        return then(command: { [weak self] context, data, next in
             guard let chainContext = self?.context else {
                 print("No Self!")
                 return
@@ -192,7 +252,7 @@ extension Chain {
                 }
                 chainContext.handleDefer()
             }
-        }, endQueue: endQueue, errorHandler : errorHandler, deferHandler: deferHandler)
+            }, endQueue: endQueue, errorHandler : errorHandler, deferHandler: deferHandler)
     }
 }
 

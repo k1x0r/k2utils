@@ -27,7 +27,6 @@ public class ByteBuffer : WriteExtensions {
         }
     }
     
-    
     @inline(__always)
     public func write(buffer data : UnsafeRawPointer, count : Int) -> Int {
         buffer.withUnsafeMutableBytes { ptr in

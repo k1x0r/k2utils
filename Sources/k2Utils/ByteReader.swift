@@ -6,14 +6,14 @@
 
 import Foundation
 
-public struct SocketReadResultOptions : OptionSet, This {
+public struct SocketReadResultOptions : OptionSet, MeSelf {
         public let rawValue: Int
         
         public init(rawValue: Int) {
             self.rawValue = rawValue
         }
         
-        public static let endOfStream = this(rawValue: 1 << 0)
+        public static let endOfStream = Me(rawValue: 1 << 0)
     
 }
 
