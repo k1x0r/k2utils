@@ -7,54 +7,60 @@
 import Foundation
 import Dispatch
 
-extension Sequence {
+public extension Sequence {
 
-    public var array: [Iterator.Element] {
+    var array: [Iterator.Element] {
         return Array(self)
     }
 }
 
-extension DispatchSemaphore {
+public extension DispatchSemaphore {
 
-    public func wait(timeout: Double) -> DispatchTimeoutResult {
+    func wait(timeout: Double) -> DispatchTimeoutResult {
         let time = DispatchTime(secondsFromNow: timeout)
         return wait(timeout: time)
     }
 }
 
-extension Double {
+public extension Double {
     internal var nanoseconds: UInt64 {
         return UInt64(self * Double(1_000_000_000))
     }
 }
 
-extension DispatchTime {
-    public init(secondsFromNow: Double) {
+public extension DispatchTime {
+    init(secondsFromNow: Double) {
         let uptime = DispatchTime.now().rawValue + secondsFromNow.nanoseconds
         self.init(uptimeNanoseconds: uptime)
     }
 }
 
-extension FixedWidthInteger {
+public extension FixedWidthInteger {
 
-    public var hex: String {
-        return String(self, radix: 16).uppercased()
+    var hex: String {
+        return String(self, radix: 16, uppercase: true)
+    }
+    
+    var bitHex: String {
+        return withUnsafeBytes(of: self) { buff -> String in
+            buff.map({ String(format: "%02hhX", $0) }).joined()
+        }
     }
 }
 
-extension NSLock {
-    public func locked(closure: () throws -> Void) rethrows {
+public extension NSLock {
+    func locked(closure: () throws -> Void) rethrows {
         lock()
         defer { unlock() } // MUST be deferred to ensure lock releases if throws
         try closure()
     }
 }
 
-extension Collection {
+public extension Collection {
     /**
      Safely access the contents of a collection. Nil if outside of bounds.
      */
-    public subscript(safe idx: Index) -> Iterator.Element? {
+    subscript(safe idx: Index) -> Iterator.Element? {
         guard startIndex <= idx else { return nil }
         // NOT >=, endIndex is "past the end"
         guard endIndex > idx else { return nil }

@@ -54,12 +54,12 @@ public protocol Reader {
 public extension Reader {
     
     @discardableResult
-    public mutating func read<T>(to : inout T) throws -> SocketReadResult {
+    mutating func read<T>(to : inout T) throws -> SocketReadResult {
         return try read(buffer: &to, count: MemoryLayout<T>.size)
     }
     
     @discardableResult
-    public mutating func read<T>(toArray to : inout [T]) throws -> SocketReadResult {
+    mutating func read<T>(toArray to : inout [T]) throws -> SocketReadResult {
         return try read(buffer: &to, count: to.count * MemoryLayout<T>.size)
     }
     

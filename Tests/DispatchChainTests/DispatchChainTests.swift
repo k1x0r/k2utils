@@ -12,18 +12,6 @@ class StringUtilsTests: XCTestCase {
 
     func testDispatchChain() {
 //        Foo()
-//        ChainContext(context: Void())
-//        Chain<Void, Void>.startWith(context: Void(), command: { _, next in
-//            next(Void())
-//        }).then(command: { (none : Void, next: (Int) -> Void) -> () in
-//            next(120)
-//        }).then(command: { (none : Int, next: (Int) -> Void) -> () in
-//            print("val \(none)")
-//
-//            next(123)
-//        }).endWith(command: { val in
-//            print("val \(val)")
-//        })
 //        print("Test finished...")
 
     }

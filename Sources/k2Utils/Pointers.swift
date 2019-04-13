@@ -45,7 +45,7 @@ extension UnsafeMutableRawPointer : MutablePointer {
     @_transparent
     @inline(__always)
     public static func allocate(capacity count: Int) -> Me {
-        return Me.allocate(bytes: count, alignedTo: 1)
+        return Me.allocate(byteCount: count, alignment: 1)
     }
 }
 
@@ -63,7 +63,7 @@ public extension UnsafeRawPointer {
     
     @_transparent
     @inline(__always)
-    public func unsafePointer<T>(with: T.Type) -> UnsafePointer<T> {
+    func unsafePointer<T>(with: T.Type) -> UnsafePointer<T> {
         return assumingMemoryBound(to: T.self)
     }
 
@@ -80,7 +80,7 @@ public extension UnsafeMutablePointer {
     
     @_transparent
     @inline(__always)
-    public func unsafePointer<T>(with: T.Type) -> UnsafePointer<T> {
+    func unsafePointer<T>(with: T.Type) -> UnsafePointer<T> {
         return UnsafePointer<T>(unsafeBitCast(self, to: UnsafeMutablePointer<T>.self))
     }
 
@@ -102,7 +102,7 @@ public extension UnsafePointer {
     
     @_transparent
     @inline(__always)
-    public func unsafePointer<T>(with: T.Type) -> UnsafePointer<T> {
+    func unsafePointer<T>(with: T.Type) -> UnsafePointer<T> {
         return unsafeBitCast(self, to: UnsafePointer<T>.self)
     }
 
@@ -116,7 +116,7 @@ public extension UnsafePointer {
 
 public extension BufferPointer {
 
-    public func slice(_ range : Range<Int>) -> Self {
+    func slice(_ range : Range<Int>) -> Self {
         assert(range.upperBound <= count)
         let size = range.upperBound - range.lowerBound
         let begin = baseAddress?.advanced(by: range.lowerBound)
@@ -126,7 +126,7 @@ public extension BufferPointer {
 
 public extension MutableBufferPointer {
     @_transparent
-    public static func allocate(capacity count : Int) -> Self {
+    static func allocate(capacity count : Int) -> Self {
         let mutablePtr = PointerType.allocate(capacity: count)
         return Self(start: mutablePtr, count: count)
     }

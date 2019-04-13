@@ -242,19 +242,22 @@ open class KeychainWrapper {
     }
     
     // MARK: Public Setters
-    
+    @available(OSX 10.11, *)
     @discardableResult open func set(_ value: Int, forKey key: String, withAccessibility accessibility: KeychainItemAccessibility? = nil) -> Bool {
         return set(NSNumber(value: value), forKey: key, withAccessibility: accessibility)
     }
     
+    @available(OSX 10.11, *)
     @discardableResult open func set(_ value: Float, forKey key: String, withAccessibility accessibility: KeychainItemAccessibility? = nil) -> Bool {
         return set(NSNumber(value: value), forKey: key, withAccessibility: accessibility)
     }
     
+    @available(OSX 10.11, *)
     @discardableResult open func set(_ value: Double, forKey key: String, withAccessibility accessibility: KeychainItemAccessibility? = nil) -> Bool {
         return set(NSNumber(value: value), forKey: key, withAccessibility: accessibility)
     }
     
+    @available(OSX 10.11, *)
     @discardableResult open func set(_ value: Bool, forKey key: String, withAccessibility accessibility: KeychainItemAccessibility? = nil) -> Bool {
         return set(NSNumber(value: value), forKey: key, withAccessibility: accessibility)
     }
@@ -279,6 +282,7 @@ open class KeychainWrapper {
     /// - parameter forKey: The key to save the object under.
     /// - parameter withAccessibility: Optional accessibility to use when setting the keychain item.
     /// - returns: True if the save was successful, false otherwise.
+    @available(OSX 10.11, *)
     @discardableResult open func set(_ value: NSCoding, forKey key: String, withAccessibility accessibility: KeychainItemAccessibility? = nil) -> Bool {
         let data = NSKeyedArchiver.archivedData(withRootObject: value)
         

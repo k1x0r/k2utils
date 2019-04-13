@@ -166,7 +166,7 @@ public extension Array where Element == String {
 public extension String {
     
     /// Workaround for Linux as 'contentsOfFile' is not yet implemented
-    public init(fromFile : String) throws {
+    init(fromFile : String) throws {
         let data = try Data(contentsOf: URL(fileURLWithPath: fromFile))
         guard let string = String(data: data, encoding: .utf8) else {
             throw "Could not convert data to string".error()
@@ -175,7 +175,7 @@ public extension String {
     }
     
     @_transparent
-    public var url : URL {
+    var url : URL {
         guard let url = URL(string: self) else {
             fatalError("Couldn't create url from \(self)")
         }
@@ -183,25 +183,25 @@ public extension String {
     }
 
     @_transparent
-    public var fileUrl : URL {
+    var fileUrl : URL {
         return URL(fileURLWithPath: self)
     }
     
     @_transparent
-    public var trimmed : String {
+    var trimmed : String {
         return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
     
     @_transparent
-    public var trimmedSmtp : String {
+    var trimmedSmtp : String {
         return self.trimmingCharacters(in: .whitespacesAndEmailSeparators)
     }
     
-    public var trimmedBeginWhitespaces : String {
+    var trimmedBeginWhitespaces : String {
         return trimmingCharachersStart(in: CharacterSet.whitespacesAndNewlines)
     }
 
-    public var trimmedEndWhitespaces : String {
+    var trimmedEndWhitespaces : String {
         return trimmingCharachersEnd(in: CharacterSet.whitespacesAndNewlines)
     }
     
@@ -253,7 +253,7 @@ public extension String {
                 let regex = try NSRegularExpression(pattern: regex, options: [])
 //            #endif
             //            let nsString = NSString(string: text)
-            return regex.numberOfMatches(in: self, options: [], range: NSRange(location: 0, length: self.characters.count))
+            return regex.numberOfMatches(in: self, options: [], range: NSRange(location: 0, length: self.count))
             //            return results.map { nsString.substring(with: $0.range) }
         } catch let error {
             print("invalid regex: \(error.localizedDescription)")
@@ -261,20 +261,24 @@ public extension String {
         }
     }
     
-    public func index(of char: Character) -> Int? {
-        if let idx = characters.index(of: char) {
-            return characters.distance(from: startIndex, to: idx)
+    @_transparent
+    func index(of char: Character) -> Int? {
+        for (i, strChar) in self.enumerated() {
+            if strChar == char {
+                return i
+            }
         }
         return nil
 
     }
     
-    public func indexLast(of char: Character) -> Int? {
-        if let idx = characters.reversed().index(of: char) {
-            return characters.distance(from: startIndex, to: idx.base)
+    func indexLast(of char: Character) -> Int? {
+        for (i, strChar) in self.enumerated().reversed() {
+            if strChar == char {
+                return i
+            }
         }
         return nil
-        
     }
     
     var urlComponents : [KV] {
@@ -358,7 +362,7 @@ public extension String {
     }
     
     func split(maxSplits : Int, chars char : Character) -> [String] {
-        return characters.split(separator: char, maxSplits: maxSplits, omittingEmptySubsequences: false).map(String.init)
+        return split(separator: char, maxSplits: maxSplits, omittingEmptySubsequences: false).map(String.init)
     }
     
     func split(first string : String) -> [String] {
@@ -373,6 +377,7 @@ public extension String {
         guard let i = index(of: char) else {
             return [self]
         }
+        
         return [substring(to: i), substring(from: i+1)]
     }
     
@@ -462,11 +467,11 @@ public extension String {
     }
     
     func base64DecodedFacebook() -> String? {
-        var needPadding = characters.count % 4;
+        var needPadding = count % 4;
         var string = self;
         if (needPadding > 0) {
             needPadding = 4 - needPadding;
-            string = padding(toLength: characters.count + needPadding, withPad: "=", startingAt: 0);
+            string = padding(toLength: count + needPadding, withPad: "=", startingAt: 0);
         }
         if let data = Data(base64Encoded: string) {
             return String(data: data, encoding: .utf8)
@@ -475,7 +480,7 @@ public extension String {
     }
     
     
-    public func equals(caseInsensitive: String) -> Bool {
+    func equals(caseInsensitive: String) -> Bool {
         return lowercased() == caseInsensitive.lowercased()
     }
 

@@ -82,7 +82,7 @@ public func += <T, S>(lhs: inout Array<T>, rhs: S) where S : Sequence, S.Iterato
 
 public extension Array where Element == Int8 {
     
-    public init(count: Int) {
+    init(count: Int) {
         self.init(repeating: 0, count: count)
     }
     
@@ -93,7 +93,7 @@ public extension Array where Element == Int8 {
 
 public extension Decodable {
     
-    public static func readFromDisk(path: String) -> Self? {
+    static func readFromDisk(path: String) -> Self? {
         do {
             let jsonDecoder = JSONDecoder()
             let configData : Data = try Data(contentsOf: URL(fileURLWithPath: path))
@@ -109,7 +109,7 @@ public extension Decodable {
 
 public extension Array where Element == UInt8 {
 
-    public init(count: Int) {
+    init(count: Int) {
         self.init(repeating: 0, count: count)
     }
 
@@ -149,11 +149,11 @@ public extension SignedInteger {
 
 public extension TimeInterval {
 
-    public var umillis : UInt64 {
+    var umillis : UInt64 {
         return UInt64(self * 1000);
     }
 
-    public var millis : Int64 {
+    var millis : Int64 {
         return Int64(self * 1000);
     }
     var seconds : Int64 {
@@ -163,20 +163,20 @@ public extension TimeInterval {
 
 public extension Int {
 
-    static public let uint8max = Int(UInt8.max)
-    static public let uint16max = Int(UInt16.max)
+    static let uint8max = Int(UInt8.max)
+    static let uint16max = Int(UInt16.max)
     #if (arch(x86_64) || arch(arm64))
-    static public let uint32max = Int(UInt32.max)
+    static let uint32max = Int(UInt32.max)
     #endif
-    public var int32 : Int32 {
+    var int32 : Int32 {
         return Int32(self)
     }
     
-    public var uint16 : UInt16 {
+    var uint16 : UInt16 {
         return UInt16(self)
     }
     
-    public var uint8 : UInt8 {
+    var uint8 : UInt8 {
         return UInt8(self)
     }
 }
@@ -189,8 +189,8 @@ public typealias MeSelf = This
 extension NSObject : This {}
 
 public extension This {
-    public typealias this = Self
-    public typealias Me = Self
+    typealias this = Self
+    typealias Me = Self
 
     func additionalInit(_ closure : (Self) throws -> ()) rethrows -> Self {
         try closure(self)
@@ -202,12 +202,12 @@ public extension This {
 public extension UUID {
     
     @_transparent
-    public var data : Data {
+    var data : Data {
         return Data(bytes: uuidBytes)
     }
     
     @_transparent
-    public var uuidBytes : [UInt8] {
+    var uuidBytes : [UInt8] {
         return Mirror(reflecting: self.uuid).children.map { $0.1 as! UInt8 }
     }
 }

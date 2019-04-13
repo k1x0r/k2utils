@@ -22,7 +22,7 @@ public extension Sequence {
 public extension Array where Element : AnyObject {
     
     @discardableResult
-    public mutating func remove(byReference element : Element) -> Bool {
+    mutating func remove(byReference element : Element) -> Bool {
         guard let index = index(where: { $0 === element }) else {
             return false
         }
@@ -100,14 +100,14 @@ extension Array where Element: Hashable {
 
 public extension Array where Element == String {
     
-    public var wireFormat : [Int8] {
+    var wireFormat : [Int8] {
         var totalLength = 0
         let cArrays : [[CChar]] = map({
             let cArray = $0.cArray
             totalLength += cArray.count + 1
             return cArray
         })
-        var buffer = ByteBuffer(bufferSize: totalLength)
+        let buffer = ByteBuffer(bufferSize: totalLength)
         for array in cArrays {
             _ = try! buffer.write(bytesOf: UInt8(array.count))
             _ = try! buffer.write(byteArray: array)
@@ -137,14 +137,15 @@ public extension Array where Element : Equatable {
 
 public extension Array where Element : Sorting {
 
-    public mutating func sort(by sortType : Element.SortType) {
+    mutating func sort(by sortType : Element.SortType) {
         sort { (first : Element, second : Element) -> Bool in
             return first.greater(second: second, by: sortType);
         }
     }
     
     // Optimize space complexity
-    public func mergeSort(by sortType : Element.SortType) -> [Element] {
+    // the order is preserved in comparison to quick sort
+    func mergeSort(by sortType : Element.SortType) -> [Element] {
         let n = self.count
         var z = [self, self]
         var d = 0

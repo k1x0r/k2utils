@@ -10,7 +10,7 @@ import Foundation
 
 class LinkedBufferTests: XCTestCase {
 
-    func testEmail() throws {
+    func testLinkedBuffer() throws {
         var b = LinkedBuffer(bufferSize: 5)
         
         

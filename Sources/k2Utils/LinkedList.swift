@@ -261,6 +261,10 @@ public final class LinkedList<T> {
         return nil
     }
     
+    deinit {
+        print("Linked List dealloc")
+    }
+
 }
 
 //: End of the base class declarations & beginning of extensions' declarations:

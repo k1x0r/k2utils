@@ -38,7 +38,7 @@ public enum CompResult {
 
 public extension Array {
     
-    public mutating func inoutFirst(_ filter : (Element) -> Bool, element elementClosure: (inout Element)->Void)  {
+    mutating func inoutFirst(_ filter : (Element) -> Bool, element elementClosure: (inout Element)->Void)  {
         try! loop { index, element in
             if filter(element) {
                 elementClosure(&element)
@@ -48,7 +48,7 @@ public extension Array {
     }
     
     @available(deprecated, message: "Should not be used because Swift 4 single access memory management. Will be deleted in future")
-    mutating public func loop(_ iterator : (inout Int, inout Element) throws -> ()) rethrows {
+    mutating func loop(_ iterator : (inout Int, inout Element) throws -> ()) rethrows {
         var i = 0;
         while i < count {
             do {
@@ -68,7 +68,7 @@ public extension Array {
     
 
     
-    public mutating func insert(newElement: Element, by sorted : (Element, Element) -> (CompResult)) -> Int {
+    mutating func insert(newElement: Element, by sorted : (Element, Element) -> (CompResult)) -> Int {
         let i = findInsertionPoint(newElement: newElement, by: sorted);
         insert(newElement, at: i);
         return i

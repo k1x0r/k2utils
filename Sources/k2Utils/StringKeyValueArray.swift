@@ -31,7 +31,7 @@ public func ^<T> (lhs : String, rhs : String) -> T where T : KeyValueStringProto
 }
 
 public extension Array where Element : KeyValueProtocol, Element.K == String, Element.V == String {
-    public var queryStringPercent : String {
+    var queryStringPercent : String {
         var string = "";
         for (i, e) in self.enumerated() {
             string += i == 0 ? "\(e.k)=\("\(e.v)".percentEncoding)" : "&\(e.k)=\("\(e.v)".percentEncoding)"
@@ -39,7 +39,7 @@ public extension Array where Element : KeyValueProtocol, Element.K == String, El
         return string;
     }
     
-    public var queryString : String {
+    var queryString : String {
         var string = "";
         for (i, e) in self.enumerated() {
             string += i == 0 ? "\(e.k)=\(e.v)" : "&\(e.k)=\(e.v)"
@@ -47,7 +47,7 @@ public extension Array where Element : KeyValueProtocol, Element.K == String, El
         return string;
     }
     
-    public var queryOAuth1String : String {
+    var queryOAuth1String : String {
         var string = "";
         for (i, e) in self.enumerated() {
             string += i == 0 ? "\(e.k)=\("\(e.v)".oauth1percentEncoding)" : "&\(e.k)=\("\(e.v)".oauth1percentEncoding)"
@@ -55,7 +55,7 @@ public extension Array where Element : KeyValueProtocol, Element.K == String, El
         return string;
     }
     
-    public var oauth1String : String {
+    var oauth1String : String {
         var string = "";
         for (i, e) in self.enumerated() {
             string += i == 0 ? "\(e.k)=\"\(e.v.oauth1percentEncoding)\"" : ", \(e.k)=\"\(e.v.oauth1percentEncoding)\""

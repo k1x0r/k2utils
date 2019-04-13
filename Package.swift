@@ -5,6 +5,9 @@ import PackageDescription
 let package = Package(
     name: "k2Utils",
     products: [
+        .executable(
+            name: "k2UtilsDebug",
+            targets: ["k2UtilsDebug"]),
         .library(
             name: "k2Utils",
             targets: ["k2Utils"]),
@@ -18,6 +21,10 @@ let package = Package(
     targets: [
         .target(
             name: "k2Utils",
+            dependencies: []
+        ),
+        .target(
+            name: "k2UtilsDebug",
             dependencies: []
         ),
         .target(
