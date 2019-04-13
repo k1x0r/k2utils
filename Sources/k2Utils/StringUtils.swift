@@ -6,9 +6,13 @@ public let kDocumentsUrl : URL = {
 }()
 
 public let kAppSupportUrl : URL = {
-//    let appSupportUrl = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create:false)
     return try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create:true)
 }()
+
+public let kiCloudDocumentsURL: URL? = {
+    return FileManager.default.url(forUbiquityContainerIdentifier: nil)?.appendingPathComponent("Documents")
+}()
+
 #endif
 
 extension CharacterSet {
