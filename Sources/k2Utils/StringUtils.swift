@@ -2,7 +2,7 @@ import Foundation
 
 #if os(iOS)
 public let kDocumentsUrl : URL = {
-   return try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create:true)
+    return try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create:true)
 }()
 
 public let kAppSupportUrl : URL = {
@@ -117,7 +117,7 @@ public extension UnsafeMutableRawBufferPointer {
 public extension UnsafeRawBufferPointer {
     
     var toString : String {
-          return String(bytes: self, encoding: .utf8) ?? ""
+        return String(bytes: self, encoding: .utf8) ?? ""
     }
     
     func array(count: Int = -1) -> [Int8] {
@@ -161,7 +161,7 @@ public extension Array where Element == String {
             }
         }
         dict[key] = value
-
+        
         return dict
     }
     
@@ -185,7 +185,7 @@ public extension String {
         }
         return url
     }
-
+    
     @_transparent
     var fileUrl : URL {
         return URL(fileURLWithPath: self)
@@ -204,7 +204,7 @@ public extension String {
     var trimmedBeginWhitespaces : String {
         return trimmingCharachersStart(in: CharacterSet.whitespacesAndNewlines)
     }
-
+    
     var trimmedEndWhitespaces : String {
         return trimmingCharachersEnd(in: CharacterSet.whitespacesAndNewlines)
     }
@@ -218,7 +218,7 @@ public extension String {
     var cArray : [CChar] {
         return utf8.map { CChar(bitPattern: $0) }
     }
-
+    
     @_transparent
     var uint8Array : [UInt8] {
         return utf8.map { $0 }
@@ -251,11 +251,11 @@ public extension String {
     /// FIXME: Replace with k2io method
     func matches(regex: String) -> Int? {
         do {
-//            #if os(Linux)
-//                let regex = try RegularExpression(pattern: regex, options: [])
-//            #else
-                let regex = try NSRegularExpression(pattern: regex, options: [])
-//            #endif
+            //            #if os(Linux)
+            //                let regex = try RegularExpression(pattern: regex, options: [])
+            //            #else
+            let regex = try NSRegularExpression(pattern: regex, options: [])
+            //            #endif
             //            let nsString = NSString(string: text)
             return regex.numberOfMatches(in: self, options: [], range: NSRange(location: 0, length: self.count))
             //            return results.map { nsString.substring(with: $0.range) }
@@ -263,26 +263,6 @@ public extension String {
             print("invalid regex: \(error.localizedDescription)")
             return nil
         }
-    }
-    
-    @_transparent
-    func index(of char: Character) -> Int? {
-        for (i, strChar) in self.enumerated() {
-            if strChar == char {
-                return i
-            }
-        }
-        return nil
-
-    }
-    
-    func indexLast(of char: Character) -> Int? {
-        for (i, strChar) in self.enumerated().reversed() {
-            if strChar == char {
-                return i
-            }
-        }
-        return nil
     }
     
     var urlComponents : [KV] {
@@ -365,102 +345,102 @@ public extension String {
         return replacingCharacters(in: start..<end, with: "\(char)");
     }
     
+    @inlinable
     func split(maxSplits : Int, chars char : Character) -> [String] {
         return split(separator: char, maxSplits: maxSplits, omittingEmptySubsequences: false).map(String.init)
     }
     
+    @inlinable
     func split(first string : String) -> [String] {
         guard let i = range(of: string) else {
             return [self]
         }
-//        let endIndex = characters.distance(from: startIndex, to: i.upperBound)
-        return [substring(to: i.lowerBound), substring(from: i.upperBound)]
+        return [String(self[..<i.lowerBound]), String(self[i.upperBound...])]
     }
     
+    @inlinable
     func split(first char : Character) -> [String] {
-        guard let i = index(of: char) else {
+        guard let i = firstIndex(of: char) else {
             return [self]
         }
         
-        return [substring(to: i), substring(from: i+1)]
+        return [String(self[..<i]), String(self[i...])]
     }
     
+    @inlinable
     func split(last char : Character) -> [String] {
-        guard let i = indexLast(of: char) else {
+        guard let i = lastIndex(of: char) else {
             return [self]
         }
-        return [substring(to: i - 1), substring(from: i)]
+        return [String(self[..<i]), String(self[index(i, offsetBy: 1)...])]
     }
     
+    @inlinable
     func substring(fromFirst: Character) -> String? {
-        guard let i = index(of: fromFirst) else {
+        guard let i = firstIndex(of: fromFirst) else {
             return nil
         }
-        return substring(from: i + 1)
+        return String(self[index(i, offsetBy: 1)...])
     }
     
+    @inlinable
     func substring(fromLast: Character) -> String? {
-        guard let i = indexLast(of: fromLast) else {
+        guard let i = lastIndex(of: fromLast) else {
             return nil
         }
-        return substring(from: i)
+        
+        return String(self[index(i, offsetBy: 1)...])
     }
-
     
-    func substring(from: Int) -> String {
-        return substring(from: index(startIndex, offsetBy : from))
-    }
-
+    @inlinable
     func substring(toFirst: Character) -> String? {
-        guard let i = index(of: toFirst) else {
+        guard let i = firstIndex(of: toFirst) else {
             return nil
         }
-        return i > 0 ? substring(to: i - 1) : ""
+        return String(self[..<i])
     }
-
     
+    
+    @inlinable
     func substring(toLast: Character) -> String? {
-        guard let i = indexLast(of: toLast) else {
+        guard let i = lastIndex(of: toLast) else {
             return nil
         }
-        return i > 0 ? substring(to: i - 1) : ""
+        return String(self[..<i])
     }
-
     
+    @inlinable
+    func substring(from: Int) -> String {
+        return String(self[index(startIndex, offsetBy : from)...])
+    }
     
-    
+    @inlinable
     func substring(to: Int) -> String {
-        return substring(to: index(startIndex, offsetBy : to))
+        return String(self[..<index(startIndex, offsetBy : to)])
     }
-    
     
     
     func trimmingCharachersStart(in charset : CharacterSet) -> String {
-        var index : Int = 0
+        var foundIndex : Int = 0
         for (i, c) in unicodeScalars.enumerated() {
             if !charset.contains(c) {
-                index = i;
+                foundIndex = i;
                 break;
             }
         }
-        return substring(from: index);
+        
+        return String(self[index(startIndex, offsetBy: foundIndex)...])
     }
     
     func trimmingCharachersEnd(in charset: CharacterSet) -> String {
-        var index : Int = characters.count
+        var foundIndex : Int = count
         for (i, c) in unicodeScalars.enumerated().reversed() {
             if !charset.contains(c) {
-                index = i + 1;
+                foundIndex = i + 1;
                 break;
             }
         }
-        return substring(to: index);
-    }
-    
-    func substring(with r: Range<Int>) -> String {
-        let start = index(startIndex, offsetBy : r.lowerBound)
-        let end = index(startIndex, offsetBy: r.upperBound)
-        return substring(with: start..<end)
+        return String(self[..<index(startIndex, offsetBy: foundIndex)])
     }
     
     func base64Encoded() -> String? {
@@ -487,5 +467,5 @@ public extension String {
     func equals(caseInsensitive: String) -> Bool {
         return lowercased() == caseInsensitive.lowercased()
     }
-
+    
 }
