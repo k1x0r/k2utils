@@ -65,16 +65,11 @@ public extension WriteExtensions {
     
     @discardableResult
     func write<T>(bytesOf bytes : T) throws -> Int {
-        var aCopy = bytes
-        var array = toByteArray(&aCopy)
-        return try write(buffer: &array, count: array.count)
+        return try withUnsafeBytes(of: bytes) { (buffer : UnsafeRawBufferPointer) -> Int in
+            return try write(buffer: buffer.baseAddress!, count: buffer.count)
+        }
     }
     
-    @discardableResult
-    func write<T>(bytesOf bytes: inout T) throws -> Int {
-        var array = toByteArray(&bytes)
-        return try write(buffer: &array, count: array.count)
-    }
-    
+
 
 }
