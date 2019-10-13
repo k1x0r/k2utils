@@ -330,7 +330,7 @@ public extension Dictionary where Key : ExpressibleByStringLiteral {
 public extension Data {
     var json : [String : Any]? {
         do {
-            return try JSONSerialization.jsonObject(with: self, options: (0~)!) as? [String : Any];
+            return try JSONSerialization.jsonObject(with: self, options: JSONSerialization.ReadingOptions()) as? [String : Any];
         } catch {
             return nil;
         }
@@ -338,7 +338,7 @@ public extension Data {
     
     var jsonArray : [Any]? {
         do {
-            return try JSONSerialization.jsonObject(with: self, options: (0~)!) as? [Any];
+            return try JSONSerialization.jsonObject(with: self, options: JSONSerialization.ReadingOptions()) as? [Any];
         } catch {
             return nil;
         }
