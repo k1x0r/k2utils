@@ -58,7 +58,7 @@ public class LinkedBuffer : WriteExtensions, Reader {
             let bytesToRead = min(bytesLeft(), unode.value.readLeft)
             let alreadyRead = unode.value.read
             unode.value.data.withUnsafeBytes { src -> Void in
-                memcpy(buffer.advanced(by: position), src.baseAddress?.advanced(by: alreadyRead), bytesToRead)
+                memcpy(buffer.advanced(by: position), src.baseAddress!.advanced(by: alreadyRead), bytesToRead)
             }
             position += bytesToRead
             unode.value.read += bytesToRead
@@ -88,7 +88,7 @@ public class LinkedBuffer : WriteExtensions, Reader {
             let bytesToWrite = min(bytesLeft(), node.value.leftBytes)
             let written = node.value.written
             node.value.data.withUnsafeMutableBytes { dst -> Void in
-                memcpy(dst.baseAddress?.advanced(by: written), buffer.advanced(by: position), bytesToWrite)
+                memcpy(dst.baseAddress!.advanced(by: written), buffer.advanced(by: position), bytesToWrite)
             }
             position += bytesToWrite
             node.value.written += bytesToWrite

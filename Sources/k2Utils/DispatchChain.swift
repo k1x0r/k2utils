@@ -165,7 +165,11 @@ public class Chain<T, C> : This, NextCommand {
     }
     
     func printRetainCount() {
+        #if os(Linux)
+        print("🔗 \(id) 🔗 \(name ?? "No Name") 🔗 Retain count: ")
+        #else
         print("🔗 \(id) 🔗 \(name ?? "No Name") 🔗 Retain count: \(CFGetRetainCount(self))")
+        #endif
     }
     
     func clearNextCommand() {
