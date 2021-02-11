@@ -410,6 +410,11 @@ public extension String {
     }
     
     @inlinable
+    var lastPathComponent : String{
+        return substring(fromLast: "/") ?? self
+    }
+    
+    @inlinable
     func substring(from: Int) -> String {
         return String(self[index(startIndex, offsetBy : from)...])
     }
